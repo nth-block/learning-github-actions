@@ -25,3 +25,22 @@ Listener spawns the worker with job details to run steps (checkout, commands, et
 | Job Lock        | 10-min expiry; renew every 1 min  [depot](https://depot.dev/blog/github-actions-runner-architecture-part-1-the-listener)                               | Renewal    |
 | Ephemeral Mode  | `--ephemeral` flag; single-job, then deregisters  [youtube](https://www.youtube.com/watch?v=GHc-IvPRnMI)               | Autoscaling|
 | API Migration   | From Azure DevOps to GitHub Broker (V2 flow)  [depot](https://depot.dev/blog/github-actions-runner-architecture-part-1-the-listener)           | Backend    |
+
+# Logging of GitHub runners
+
+GitHub self-hosted runners generate diagnostic logs primarily in the `_diag` directory within the runner's installation folder. These include runner application logs and per-job worker logs for monitoring and troubleshooting. [github](https://github.com/orgs/community/discussions/25538)
+
+## Log Directory Structure
+The `_diag` folder organizes logs into subdirectories like `pages/` and `blocks/`, with files timestamped in UTC. [notes.kodekloud](https://notes.kodekloud.com/docs/GitHub-Actions-Certification/Self-Hosted-Runner/Exploring-Self-Hosted-Runner)
+- `pages/`: Contains main log files for runner and worker processes. [notes.kodekloud](https://notes.kodekloud.com/docs/GitHub-Actions-Certification/Self-Hosted-Runner/Exploring-Self-Hosted-Runner)
+- `blocks/`: Holds segmented log blocks for larger outputs. [github](https://github.com/actions/runner/discussions/917)
+
+## Main Log Types
+
+| Log Prefix       | Description                                                                 | Example Filename                  |
+|------------------|-----------------------------------------------------------------------------|-----------------------------------|
+| `Runner_`       | Logs runner application startup, polling, session handling, and coordination  [docs.github](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/monitoring-and-troubleshooting-self-hosted-runners?platform=windows) | `Runner_20231024-145143-utc.log`  [notes.kodekloud](https://notes.kodekloud.com/docs/GitHub-Actions-Certification/Self-Hosted-Runner/Exploring-Self-Hosted-Runner) |
+| `Worker_`       | Detailed per-job execution logs, including steps, commands, and errors  [docs.github](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/monitoring-and-troubleshooting-self-hosted-runners?platform=windows) | `Worker_20231024-152375-utc.log`  [notes.kodekloud](https://notes.kodekloud.com/docs/GitHub-Actions-Certification/Self-Hosted-Runner/Exploring-Self-Hosted-Runner) |
+
+## Enabling Extra Logging
+Set the `ACTIONS_RUNNER_DEBUG=true` secret/variable in your repo to generate additional runner and worker diagnostic logs in workflow archives. A new log file creates on each runner restart, aiding in diagnosing connectivity or job issues. [docs.github](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/monitoring-and-troubleshooting-self-hosted-runners?platform=windows)
